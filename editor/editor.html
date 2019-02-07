@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
+        <script type='text/javascript'>const ipcRenderer = require('electron').ipcRenderer;</script>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <!-- Metro 4 -->
+        <link rel="stylesheet" href="./libs/metro.css">
+        <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro.min.css">
+        <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-colors.min.css">
+        <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-rtl.min.css">
+        <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-icons.min.css">
+        <!--<link id="color-scheme" href="./libs/darcula.min.css" rel="stylesheet">-->
+        <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/grapesjs/0.12.17/css/grapes.min.css">-->
+        <link rel="stylesheet" href="./libs/grapejs/css/grapes.min.css">
+
+        <style>
+            body {
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+                background-color: #2B2B2B !important;
+            }
+
+            header {
+                width: 100%;
+            }
+
+            .fixed {
+                position: fixed;
+            }
+
+            .editor {
+                float: right;
+                width: 64%;
+                height: 583px;
+
+            }
+
+            .file-view {
+                height: 100%; /* Full-height: remove this if you want "auto" height */
+                width: 160px; /* Set the width of the sidebar */
+                float: left;
+            }
+
+            .gjs-block {
+                width: 100px;
+                height: 50px;
+                min-height: auto;
+                padding: 2px;
+                margin: 0px;
+            }
+
+            /* Let's highlight canvas boundaries */
+            #gjs {
+                border: 3px solid #444;
+            }
+
+            /* Reset some default styling */
+            .gjs-cv-canvas {
+                top: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+            .panel__top {
+                padding: 0;
+                width: 100%;
+                display: flex;
+                position: initial;
+                justify-content: center;
+                justify-content: space-between;
+            }
+            .panel__basic-actions {
+                position: initial;
+            }
+
+            .editor-row {
+                display: flex;
+                justify-content: flex-start;
+                align-items: stretch;
+                flex-wrap: nowrap;
+                height: 300px;
+            }
+
+            .editor-canvas {
+                flex-grow: 1;
+            }
+
+            .panel__right {
+                flex-basis: 230px;
+                position: relative;
+                overflow-y: auto;
+            }
+
+            .panel__switcher {
+                position: initial;
+            }
+        </style>
+
+        <title>Editor</title>
+    </head>
+    <body>
+        <header>
+            <nav data-role="ribbonmenu">
+                <ul class="tabs-holder">
+                    <li><a id="file-tab" href="#file-group">File</a></li>
+                    <li><a id="edit-tab" href="#edit-group">Code</a></li>
+                    <li><a id="designer-tab" href="#designer-group">Designer</a></li>
+                    <li><a id="group-tab" href="#section-group">Group</a></li>
+                </ul>
+
+                <div class="content-holder">
+                    <div class="section" id="file-group">
+                        <!--<button class="ribbon-tool-button">-->
+                            <!--<span class="icon">-->
+                                <!--<img src="">-->
+                            <!--</span>`-->
+                        <!--</button>-->
+                    </div>
+                    <div class="section" id="edit-group">
+                        <!--<button class="ribbon-tool-button">-->
+                            <!--<span class="icon">-->
+                                <!--<img src="">-->
+                            <!--</span>`-->
+                        <!--</button>-->
+                    </div>
+                    <div class="section" id="designer-group">
+                        <!--<button class="ribbon-tool-button">-->
+                            <!--<span class="icon">-->
+                                <!--<img src="">-->
+                            <!--</span>`-->
+                        <!--</button>-->
+                    </div>
+                    <div class="section" id="section-group">
+                        <div class="group">
+
+                            <div data-role="buttonsGroup" data-cls-active="active">
+                                <button class="ribbon-button">
+                                <span class="icon">
+                                    <span class="mif-vertical-align-top"></span>
+                                </span>
+                                    <span class="caption">Top</span>
+                                </button>
+                                <button class="ribbon-button">
+                                <span class="icon">
+                                    <span class="mif-vertical-align-center"></span>
+                                </span>
+                                    <span class="caption">Center</span>
+                                </button>
+                                <button class="ribbon-button">
+                                <span class="icon">
+                                    <span class="mif-vertical-align-bottom"></span>
+                                </span>
+                                    <span class="caption">Bottom</span>
+                                </button>
+                            </div>
+
+                            <span class="title">Role group</span>
+                        </div>
+
+                        <div class="group">
+                            <div class="ribbon-toggle-group">
+                                <button class="ribbon-icon-button">
+                                    <span class="icon">
+                                        <span class="mif-list"></span>
+                                    </span>
+                                    <span class="caption">List</span>
+                                </button>
+
+                                <button class="ribbon-icon-button">
+                                    <span class="icon">
+                                        <span class="mif-apps"></span>
+                                    </span>
+                                    <span class="caption">Content</span>
+                                </button>
+
+                                <button class="ribbon-icon-button">
+                                    <span class="icon">
+                                        <span class="mif-table"></span>
+                                    </span>
+                                    <span class="caption">Icons</span>
+                                </button>
+
+                                <button class="ribbon-icon-button">
+                                    <span class="icon">
+                                        <span class="mif-image"></span>
+                                    </span>
+                                    <span class="caption">Small icons</span>
+                                </button>
+
+                                <button class="ribbon-icon-button">
+                                    <span class="icon">
+                                        <span class="mif-images"></span>
+                                    </span>
+                                    <span class="caption">Large icons</span>
+                                </button>
+
+                                <button class="ribbon-icon-button">
+                                    <span class="icon">
+                                        <span class="mif-windows"></span>
+                                    </span>
+                                    <span class="caption">Tiles</span>
+                                </button>
+                            </div>
+
+                            <span class="title">Group class</span>
+                        </div>
+
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <div>
+            <div id="file-viewer" class="file-view">
+                <ul data-role="treeview">
+                    <li data-icon="<span class='mif-star-full'></span>" data-caption="Favorites">
+                        <ul>
+                            <li data-icon="<span class='mif-library'></span>" data-caption="Projects"></li>
+                            <li data-icon="<span class='mif-download'></span>" data-caption="Downloads"></li>
+                            <li data-icon="<span class='mif-display'></span>" data-caption="Desktop"></li>
+                        </ul>
+                    </li>
+                    <li data-icon="<span class='mif-onedrive'></span>" data-caption="OneDrive">
+                        <ul>
+                            <li data-caption="Documents"></li>
+                            <li data-caption="Projects">
+                                <ul>
+                                    <li data-caption="Web"></li>
+                                    <li data-caption="Android"></li>
+                                    <li data-caption="Windows"></li>
+                                    <li data-caption="iOS"></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="code-editor" class="editor"></div>
+
+            <div id="visual-editor" class="visual-editor">
+                <div id="toolbox">
+                </div>
+                <div id="workspace">
+                </div>
+            </div>
+
+            <!--<div id="gjs-editor">-->
+                <!--<div class="panel__top">-->
+                    <!--<div class="panel__basic-actions"></div>-->
+                    <!--<div class="panel__switcher"></div>-->
+                <!--</div>-->
+                <!--<div id="blocks">-->
+                    <!--<p>Toolbox</p>-->
+                <!--</div>-->
+                <!--<div class="editor-row">-->
+                    <!--<div class="editor-canvas">-->
+                        <!--<div id="grapejs-editor">-->
+                            <!--<link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro.min.css">-->
+                            <!--<link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-colors.min.css">-->
+                            <!--<link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-rtl.min.css">-->
+                            <!--<link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-icons.min.css">-->
+
+                            <!--&lt;!&ndash; jQuery first, then Metro UI JS - JQUERY WORK AROUND FOR ELECTRON&ndash;&gt;-->
+                            <!--&lt;!&ndash;<script>try{window.$ = window.jQuery = require('./libs/jquery-3.3.1.min.js');}catch(e){alert("NOT NODEJS")}</script>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<script src='./libs/metro.js'></script>&ndash;&gt;-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="panel__right">-->
+                        <!--<div class="layers-container"></div>-->
+                        <!--<div class="styles-container"></div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        </div>
+
+
+        <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/grapesjs/0.12.17/grapes.min.js"></script>-->
+
+        <script src="./libs/grapejs/grapes.min.js"></script>
+        <!-- jQuery first, then Metro UI JS - JQUERY WORK AROUND FOR ELECTRON-->
+        <script>window.$ = window.jQuery = require('./libs/jquery-3.3.1.min.js');</script>
+        <script src='./libs/metro.js'></script>
+        <script src="./src/Renderer.js"></script>
+    </body>
+</html>
