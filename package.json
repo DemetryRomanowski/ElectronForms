@@ -2,7 +2,7 @@
   "name": "electron-windows-desktop",
   "version": "1.0.0",
   "description": "An electron windows template project",
-  "main": "StudioEditor.js",
+  "main": "ExampleApp.js",
   "scripts": {
     "test": "electron ./src/FormsApp.js",
     "editor": "electron ."
